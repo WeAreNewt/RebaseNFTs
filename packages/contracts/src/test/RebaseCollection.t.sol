@@ -20,6 +20,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
     }
 
     function testInitTotalSupply() public {
+        // The total supply should be fixed (for now)
         uint256 commonSupply = rebaseCollection.totalSupply(COMMON);
         uint256 uncommonSupply = rebaseCollection.totalSupply(UNCOMMON);
         uint256 rareSupply = rebaseCollection.totalSupply(RARE);
@@ -34,6 +35,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
     }
 
     function testInitTotalBalance() public {
+        // All tokens are minted directly to the creator
         uint256 commonBalance = rebaseCollection.balanceOf(address(this), COMMON);
         uint256 uncommonBalance = rebaseCollection.balanceOf(address(this), UNCOMMON);
         uint256 rareBalance = rebaseCollection.balanceOf(address(this), RARE);
@@ -48,7 +50,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
     }
 
     function testTransferFrom() public {
-
+        // Test transfer still works
         uint256 amountToTransfer = 1; 
 
         rebaseCollection.safeTransferFrom(address(this), address(0x11), COMMON, amountToTransfer, "");
@@ -62,7 +64,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
     }
 
     function testTotalBalanceAfterRebase() public {
-
+        // Test that balance changes as expected after rebase
         rebaseCollection.rebase(COMMON, int256(rebaseCollection.totalSupply(COMMON))); // Double the total supply
         rebaseCollection.rebase(UNCOMMON, int256(rebaseCollection.totalSupply(UNCOMMON))); // Double the total supply
         rebaseCollection.rebase(RARE, int256(rebaseCollection.totalSupply(RARE))); // Double the total supply
@@ -73,11 +75,28 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
         uint256 epicBalance = rebaseCollection.balanceOf(address(this), EPIC);
         uint256 legendaryBalance = rebaseCollection.balanceOf(address(this), LEGENDARY);
 
+        // Doubling the total supply should double your balance
         assertEq(commonBalance, INITIAL_SUPPLY * 2);
         assertEq(uncommonBalance, INITIAL_SUPPLY * 2);
         assertEq(rareBalance, INITIAL_SUPPLY * 2);
         assertEq(epicBalance, INITIAL_SUPPLY);
         assertEq(legendaryBalance, INITIAL_SUPPLY);
+    }
+
+    function testSmallAmountsAfterRebase() public {
+        /**
+        * Test that there is no fractions:
+        * 1 NFT becomes 2 NFTs when rebase increases supply >= 100%
+        * 2 NFT becomes 3 NFTs when rebase increases supply >= 50%
+        * 3 NFT becomes 4 NFTs when rebase increases supply >= ~33%
+        */
+
+        rebaseCollection.safeTransferFrom(address(this), address(0x11), COMMON, 1, "");
+        rebaseCollection.rebase(COMMON, int256( rebaseCollection.totalSupply(COMMON) - 1 )); // Increase supply by ~99%
+        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 1);
+        rebaseCollection.rebase(COMMON, int256( 1 )); // Increase supply by ~1% (Total of 100%)
+        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 2);
+
     }
 
     function onERC1155Received(
