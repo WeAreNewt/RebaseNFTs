@@ -2,11 +2,17 @@
 
 ## Installation
 
-`yarn install`
+```properties
+yarn install
+```
 
 
 ## Development
 
-`yarn dev`
+```properties
+yarn dev
+```
+
+App will load at `localhost:3000`
 
 
