@@ -14,9 +14,9 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
     uint256 private constant EPIC = 3;
     uint256 private constant LEGENDARY = 4;
 
-    uint256 private constant INITIAL_SUPPLY = 1000;
+    uint256 private constant INITIAL_SUPPLY = 10000;
     function setUp() public {
-        rebaseCollection = new RebaseCollection("", INITIAL_SUPPLY);
+        rebaseCollection = new RebaseCollection("");
     }
 
     function testInitTotalSupply() public {

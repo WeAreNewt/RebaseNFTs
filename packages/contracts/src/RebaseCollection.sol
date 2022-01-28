@@ -13,11 +13,12 @@ contract RebaseCollection is ERC1155 {
     event LogRebase(uint256 indexed epoch, uint256 totalSupply);
 
     uint256 private constant MAX_UINT256 = type(uint256).max;
-    uint256 private immutable INITIAL_TOTAL_SUPPLY;
+    uint256 private constant INITIAL_TOTAL_SUPPLY = 10000;
 
     // TOTAL_BASE_UNITS is a multiple of INITIAL_TOTAL_SUPPLY so that _baseUnitsPerSupply is an integer.
     // Use the highest value that fits in a uint256 for max granularity.
-    uint256 private immutable TOTAL_BASE_UNITS;
+    uint256 private constant TOTAL_BASE_UNITS =
+        MAX_UINT256 - (MAX_UINT256 % INITIAL_TOTAL_SUPPLY);
 
     // MAX_SUPPLY = maximum integer < (sqrt(4*TOTAL_BASE_UNITS + 1) - 1) / 2
     uint256 private constant MAX_SUPPLY = type(uint128).max;
@@ -28,9 +29,7 @@ contract RebaseCollection is ERC1155 {
 
     mapping(address => mapping(address => uint256)) private _allowances;
 
-    constructor(string memory metadataURI, uint256 initialSupply) ERC1155(metadataURI) {
-        INITIAL_TOTAL_SUPPLY = initialSupply;
-        TOTAL_BASE_UNITS = MAX_UINT256 - (MAX_UINT256 % INITIAL_TOTAL_SUPPLY);
+    constructor(string memory metadataURI) ERC1155(metadataURI) {
         initTokenId(COMMON);
         initTokenId(UNCOMMON);
         initTokenId(RARE);
@@ -97,7 +96,7 @@ contract RebaseCollection is ERC1155 {
         return _baseUnitBalances[id][account];
     }
 
-    function baseTotalSupply() external view returns (uint256) {
+    function baseTotalSupply() external pure returns (uint256) {
         return TOTAL_BASE_UNITS;
     }
 
