@@ -1,1 +1,12 @@
-This is a starter template for [Learn Next.js](https://nextjs.org/learn).
+# Rebase NFTs Frontend
+
+## Installation
+
+`yarn install`
+
+
+## Development
+
+`yarn dev`
+
+
