@@ -1,0 +1,3 @@
+[submodule "/Users/josephroccisano/Documents/Newt/RebaseNFTs/packages/contracts/lib/openzeppelin-contracts"]
+	path = /Users/josephroccisano/Documents/Newt/RebaseNFTs/packages/contracts/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
