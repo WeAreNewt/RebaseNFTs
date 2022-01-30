@@ -3,7 +3,7 @@ import { AppPage, Layout } from '^@components'
 import { Permissions } from '^@services/permissions'
 
 const Home = () => (
-  <Layout>
+  <Layout hideSidebar>
     <div className="flex flex-col justify-center items-center h-full relative">
       <div className="md:w-200 text-center z-10">
         <h1 className="text-6xl leading-none font-extrabold tracking-tight text-white">
