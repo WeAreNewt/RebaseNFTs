@@ -1,3 +1,7 @@
+import { Button } from 'components/Button/Button'
+
 export const ConnectWallet = () => (
-  <div className="w-full h-24 text-right px-10">Connect Wallet</div>
+  <div className="flex w-full h-24 justify-end px-10">
+    <Button text="Connect Wallet" />
+  </div>
 )

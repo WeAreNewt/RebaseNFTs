@@ -7,9 +7,10 @@ export const Header = () => (
     </div>
     <nav className="mr-10">
       <ol className="flex text-white items-center h-full">
-        <li className="px-2 ml-2">Item One</li>
-        <li className="px-2 ml-2">Item Two</li>
-        <li className="px-2 ml-2">Item Three</li>
+        <li className="px-2 ml-2">Github</li>
+        <li className="px-2 ml-2">Snowtrace</li>
+        <li className="px-2 ml-2">Twitter</li>
+        <li className="px-2 ml-2">Discord</li>
       </ol>
     </nav>
   </div>
