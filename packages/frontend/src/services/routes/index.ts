@@ -1,6 +1,4 @@
 export const stake = '/stake'
 export const stats = '/stats'
 export const mint = '/mint'
-export const buy = '/buy'
 export const docs = '/docs'
-export const bridge = '/bridge'

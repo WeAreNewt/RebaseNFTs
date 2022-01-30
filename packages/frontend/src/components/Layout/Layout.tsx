@@ -23,7 +23,7 @@ export const Layout = ({
 
     <div className="flex flex-col mt-2 flex-1">
       {showConnectWallet && <ConnectWallet />}
-      <main className="px-4 flex flex-col flex-1">{children}</main>
+      <main className="px-4 flex flex-col mx-4 flex-1">{children}</main>
     </div>
   </div>
 )
