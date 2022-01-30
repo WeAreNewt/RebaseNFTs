@@ -42,10 +42,12 @@ const Item = ({ href, newTab = false, children }: ItemProps) => {
 
 export const Sidebar = () => (
   <div className="flex flex-col w-80 bg-light-pink-700 px-2 pt-2 text-white">
-    <div className="flex items-center font-bold p-4">
-      <Icon name="Rabbit" size={32} />
-      <span className="ml-2">Rabbits</span>
-    </div>
+    <Link href="/">
+      <div className="flex items-center font-bold p-4 cursor-pointer">
+        <Icon name="Rabbit" size={32} />
+        <span className="ml-2">Rabbits</span>
+      </div>
+    </Link>
     <ol className="mt-3">
       <Item href={routes.stake}>
         <HomeIcon className="w-6 h-6 mr-2" /> Stake

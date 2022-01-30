@@ -1,6 +1,10 @@
-import Image from 'next/image'
+import { Button } from 'components/Button/Button'
 import { AppPage, Layout } from '^@components'
 import { Permissions } from '^@services/permissions'
+import { stake } from '^@services/routes'
+
+import Image from 'next/image'
+import Link from 'next/link'
 
 const Home = () => (
   <Layout hideSidebar>
@@ -17,6 +21,12 @@ const Home = () => (
           cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat
           aliqua.
         </p>
+        <div className="flex w-full justify-center mt-4">
+          <Link href={stake}>
+            <Button text="Enter app" className="mr-4" />
+          </Link>
+          <Button text="Docs" variant="secondary" />
+        </div>
       </div>
       <div className="md:absolute md:bottom-2 md:right-10">
         <Image src="/images/bunny.svg" height={550} width={550} />
