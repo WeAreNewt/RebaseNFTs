@@ -11,6 +11,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string
   loading?: boolean
   variant?: `${Variants}`
+  height?: string
 }
 
 export const Button = ({
@@ -18,6 +19,7 @@ export const Button = ({
   loading = false,
   text,
   variant = Variants.primary,
+  height = 'h-12',
   ...props
 }: Props) => (
   <>
@@ -25,13 +27,14 @@ export const Button = ({
       {...props}
       disabled={loading}
       className={cn(
-        'rounded-md px-2 py-4 w-36 h-12 flex justify-center items-center cursor-pointer disabled:opacity-50',
+        'rounded-md px-2 py-4 w-36 flex justify-center items-center cursor-pointer disabled:opacity-50',
         {
           'bg-dark-pink-100 text-white hover:bg-light-pink-700':
             variant === Variants.primary,
           'bg-white text-zinc-800 hover:bg-zinc-200':
             variant === Variants.secondary,
         },
+        height,
         className
       )}
     >

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { AppPage, Layout } from '^@components'
+import { AppPage, ConnectWalletButton, Layout } from '^@components'
 import { Permissions } from '^@services/permissions'
 
 const Mint = () => (
@@ -12,7 +12,8 @@ const Mint = () => (
       <h1 className="text-6xl leading-none font-extrabold mb-4">
         Mint! It's free.
       </h1>
-      <h2 className="text-4xl leading-10 font-normal">9990/9999 minted</h2>
+      <h2 className="text-4xl leading-10 font-normal mb-4">9990/9999 minted</h2>
+      <ConnectWalletButton />
     </div>
   </Layout>
 )

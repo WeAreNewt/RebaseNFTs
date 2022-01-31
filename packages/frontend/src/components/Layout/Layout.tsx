@@ -1,4 +1,4 @@
-import { ConnectWallet, Header, Sidebar } from '^@components'
+import { ConnectWalletHeader, Header, Sidebar } from '^@components'
 import cn from 'classnames'
 interface Props {
   /**
@@ -22,7 +22,7 @@ export const Layout = ({
     {!hideSidebar ? <Sidebar /> : <Header />}
 
     <div className="flex flex-col mt-2 flex-1">
-      {showConnectWallet && <ConnectWallet />}
+      {showConnectWallet && <ConnectWalletHeader />}
       <main className="px-4 flex flex-col mx-4 flex-1">{children}</main>
     </div>
   </div>
