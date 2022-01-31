@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.5",
     "classnames": "^2.3.1",
     "date-fns": "^2.11.1",
     "gray-matter": "^4.0.2",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
+    "@svgr/webpack": "^6.2.1",
     "@types/classnames": "^2.3.1",
     "@types/node": "^17.0.13",
     "@types/react": "^17.0.38",
