@@ -36,6 +36,8 @@ contract RebaseCollection is ERC1155 {
         uint256 finalTotalSupply
     );
 
+    // TODO: Add events
+    
     uint256 private constant MAX_UINT256 = type(uint256).max;
     uint256 private constant TOTAL_NFTS_TO_MINT = 10000;
 
@@ -47,7 +49,7 @@ contract RebaseCollection is ERC1155 {
      */
     uint256 private constant MAX_BASE_UNITS = MAX_UINT256 - (MAX_UINT256 % TOTAL_NFTS_TO_MINT);
     uint256 private constant ONE_NFT_WORTH_OF_BASE_UNITS = MAX_BASE_UNITS / TOTAL_NFTS_TO_MINT;
-    uint256 private total_base_units; // Start with one NFT worth and increase during minting
+
     /**
      * @notice The largest value the total supply can reach
      * @dev When a reabse occurs we request to change the supply by `supplyDelta`
@@ -75,6 +77,7 @@ contract RebaseCollection is ERC1155 {
      * @dev This amount is divided by a scale factor to get the final balance
      */
     mapping(uint256 => mapping(address => uint256)) private _baseUnitBalances;
+    mapping(uint256  => uint256) private total_base_units; 
 
     constructor(string memory metadataURI) ERC1155(metadataURI) {
         // _initTokenId(COMMON);
@@ -103,16 +106,15 @@ contract RebaseCollection is ERC1155 {
         uint256 amount,
         bytes memory data
     ) public {
-        require(to != address(0), "RebaseCollection: mint to the zero address");
         require(totalSupply(id) + amount <= TOTAL_NFTS_TO_MINT, "RebaseCollection: Total supply exceeded");
         address operator = _msgSender();
 
         _totalSupply[id] += amount;
         uint256 baseUnitValue = ONE_NFT_WORTH_OF_BASE_UNITS *  amount;
-        total_base_units += baseUnitValue; 
+        total_base_units[id] += baseUnitValue; 
         _baseUnitBalances[id][msg.sender] += baseUnitValue;
-        _scalingFactor[id] = total_base_units / _totalSupply[id];
-        emit TransferSingle(operator, address(0), to, id, amount);
+        _scalingFactor[id] = total_base_units[id] / _totalSupply[id];
+        emit TransferSingle(operator, address(0), msg.sender, id, amount);
 
         // _doSafeTransferAcceptanceCheck(operator,address(0),to,id,amount,data);  // TODO: Add this back
     }
@@ -142,7 +144,7 @@ contract RebaseCollection is ERC1155 {
         }
 
         // When the total supply changes you must also adjust the scaling factor to change the balances
-        _scalingFactor[id] = total_base_units / _totalSupply[id];
+        _scalingFactor[id] = total_base_units[id] / _totalSupply[id];
 
         emit Rebased(block.timestamp, initialTotalSupply, _totalSupply[id]);
         return _totalSupply[id];
@@ -158,8 +160,8 @@ contract RebaseCollection is ERC1155 {
     /**
      * @notice The total number of base units in circulation
      */
-    function baseTotalSupply() external pure returns (uint256) {
-        return total_base_units;
+    function baseTotalSupply(uint256 id) external view returns (uint256) {
+        return total_base_units[id];
     }
 
     /**
@@ -176,7 +178,14 @@ contract RebaseCollection is ERC1155 {
             account != address(0),
             "ERC1155: balance query for the zero address"
         );
-        return _baseUnitBalances[id][account] / _scalingFactor[id];
+
+        uint256 baseUnitValue = _baseUnitBalances[id][account]; 
+        if (baseUnitValue > 0) {
+            return  baseUnitValue / _scalingFactor[id]; // TODO: We would probably get better results by rounding up/down?
+        } else {
+            return 0;
+        }
+        
     }
 
     /**
