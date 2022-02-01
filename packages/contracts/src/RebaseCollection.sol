@@ -174,6 +174,8 @@ contract RebaseCollection is ERC1155 {
         override
         returns (uint256)
     {
+        // TODO: We would probably get better results by rounding up/down?
+        // TODO: What happens when balanceOf is zero? How would the user sell the NFT on OpenSea?
         require(
             account != address(0),
             "ERC1155: balance query for the zero address"
@@ -181,7 +183,7 @@ contract RebaseCollection is ERC1155 {
 
         uint256 baseUnitValue = _baseUnitBalances[id][account]; 
         if (baseUnitValue > 0) {
-            return  baseUnitValue / _scalingFactor[id]; // TODO: We would probably get better results by rounding up/down?
+            return  baseUnitValue / _scalingFactor[id]; 
         } else {
             return 0;
         }

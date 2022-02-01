@@ -8,95 +8,126 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 contract RebaseCollectionTest is DSTest, IERC1155Receiver {
     RebaseCollection rebaseCollection;
 
-    uint256 private constant COMMON = 0;
-    uint256 private constant UNCOMMON = 1;
-    uint256 private constant RARE = 2;
-    uint256 private constant EPIC = 3;
-    uint256 private constant LEGENDARY = 4;
+    uint256 public constant COMMON = 0;
+    uint256 public constant RARE = 1;
+    uint256 public constant LEGENDARY = 2;
+    uint256 public constant GOD = 3;
 
-    uint256 private constant INITIAL_SUPPLY = 10000;
+    uint256 private constant INITIAL_SUPPLY = 1;
+
     function setUp() public {
         rebaseCollection = new RebaseCollection("");
     }
 
-    function testInitTotalSupply() public {
-        // The total supply should be fixed (for now)
-        uint256 commonSupply = rebaseCollection.totalSupply(COMMON);
-        uint256 uncommonSupply = rebaseCollection.totalSupply(UNCOMMON);
-        uint256 rareSupply = rebaseCollection.totalSupply(RARE);
-        uint256 epicSupply = rebaseCollection.totalSupply(EPIC);
-        uint256 legendarySupply = rebaseCollection.totalSupply(LEGENDARY);
+    function testInitialisedCorrectly() public {
+        // Correct Total Supply
+        assertEq(rebaseCollection.totalSupply(COMMON), INITIAL_SUPPLY);
+        assertEq(rebaseCollection.totalSupply(RARE), INITIAL_SUPPLY);
+        assertEq(rebaseCollection.totalSupply(LEGENDARY), INITIAL_SUPPLY);
+        assertEq(rebaseCollection.totalSupply(GOD), INITIAL_SUPPLY);
 
-        assertEq(commonSupply, INITIAL_SUPPLY);
-        assertEq(uncommonSupply, INITIAL_SUPPLY);
-        assertEq(rareSupply, INITIAL_SUPPLY);
-        assertEq(epicSupply, INITIAL_SUPPLY);
-        assertEq(legendarySupply, INITIAL_SUPPLY);
-    }
-
-    function testInitTotalBalance() public {
-        // All tokens are minted directly to the creator
-        uint256 commonBalance = rebaseCollection.balanceOf(address(this), COMMON);
-        uint256 uncommonBalance = rebaseCollection.balanceOf(address(this), UNCOMMON);
-        uint256 rareBalance = rebaseCollection.balanceOf(address(this), RARE);
-        uint256 epicBalance = rebaseCollection.balanceOf(address(this), EPIC);
-        uint256 legendaryBalance = rebaseCollection.balanceOf(address(this), LEGENDARY);
-
-        assertEq(commonBalance, INITIAL_SUPPLY);
-        assertEq(uncommonBalance, INITIAL_SUPPLY);
-        assertEq(rareBalance, INITIAL_SUPPLY);
-        assertEq(epicBalance, INITIAL_SUPPLY);
-        assertEq(legendaryBalance, INITIAL_SUPPLY);
+        // Correct Balance
+        assertEq(
+            rebaseCollection.balanceOf(address(this), COMMON),
+            INITIAL_SUPPLY
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(this), RARE),
+            INITIAL_SUPPLY
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(this), LEGENDARY),
+            INITIAL_SUPPLY
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(this), GOD),
+            INITIAL_SUPPLY
+        );
     }
 
     function testTransferFrom() public {
-        // Test transfer still works
-        uint256 amountToTransfer = 1; 
+        uint256 amountToTransfer = 1;
 
-        rebaseCollection.safeTransferFrom(address(this), address(0x11), COMMON, amountToTransfer, "");
-        rebaseCollection.safeTransferFrom(address(this), address(0x11), UNCOMMON, amountToTransfer, "");
+        rebaseCollection.safeTransferFrom(
+            address(this),
+            address(0x11),
+            COMMON,
+            amountToTransfer,
+            ""
+        );
 
-        assertEq(rebaseCollection.balanceOf(address(this), COMMON), INITIAL_SUPPLY - amountToTransfer);
-        assertEq(rebaseCollection.balanceOf(address(this), UNCOMMON), INITIAL_SUPPLY - amountToTransfer);
-        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), amountToTransfer);
-        assertEq(rebaseCollection.balanceOf(address(0x11), UNCOMMON), amountToTransfer);
-
+        assertEq(
+            rebaseCollection.balanceOf(address(this), COMMON),
+            INITIAL_SUPPLY - amountToTransfer
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(0x11), COMMON),
+            amountToTransfer
+        );
     }
 
     function testTotalBalanceAfterRebase() public {
         // Test that balance changes as expected after rebase
-        rebaseCollection.rebase(COMMON, int256(rebaseCollection.totalSupply(COMMON))); // Double the total supply
-        rebaseCollection.rebase(UNCOMMON, int256(rebaseCollection.totalSupply(UNCOMMON))); // Double the total supply
-        rebaseCollection.rebase(RARE, int256(rebaseCollection.totalSupply(RARE))); // Double the total supply
 
-        uint256 commonBalance = rebaseCollection.balanceOf(address(this), COMMON);
-        uint256 uncommonBalance = rebaseCollection.balanceOf(address(this), UNCOMMON);
-        uint256 rareBalance = rebaseCollection.balanceOf(address(this), RARE);
-        uint256 epicBalance = rebaseCollection.balanceOf(address(this), EPIC);
-        uint256 legendaryBalance = rebaseCollection.balanceOf(address(this), LEGENDARY);
-
+        rebaseCollection.rebase(
+            COMMON,
+            int256(rebaseCollection.totalSupply(COMMON))
+        ); // Double the total supply
+        uint256 commonBalance = rebaseCollection.balanceOf(
+            address(this),
+            COMMON
+        );
         // Doubling the total supply should double your balance
         assertEq(commonBalance, INITIAL_SUPPLY * 2);
-        assertEq(uncommonBalance, INITIAL_SUPPLY * 2);
-        assertEq(rareBalance, INITIAL_SUPPLY * 2);
-        assertEq(epicBalance, INITIAL_SUPPLY);
-        assertEq(legendaryBalance, INITIAL_SUPPLY);
     }
 
-    function testSmallAmountsAfterRebase() public {
+    function testIncreaseFractionBehaviour() public {
         /**
-        * Test that there is no fractions:
-        * 1 NFT becomes 2 NFTs when rebase increases supply >= 100%
-        * 2 NFT becomes 3 NFTs when rebase increases supply >= 50%
-        * 3 NFT becomes 4 NFTs when rebase increases supply >= ~33%
-        */
+         * Test that there is no fractions:
+         * 1 NFT becomes 2 NFTs when rebase increases supply >= 100%
+         * 2 NFT becomes 3 NFTs when rebase increases supply >= 50%
+         * 3 NFT becomes 4 NFTs when rebase increases supply >= ~33%
+         */
 
-        rebaseCollection.safeTransferFrom(address(this), address(0x11), COMMON, 1, "");
-        rebaseCollection.rebase(COMMON, int256( rebaseCollection.totalSupply(COMMON) - 1 )); // Increase supply by ~99%
+        rebaseCollection.mint(COMMON, 9999, ""); // Now the supply us 10k
+
+        // Transfer 1 NFT 
+        rebaseCollection.safeTransferFrom(address(this),address(0x11),COMMON,1,"");
+
+        // Increase supply by ~99.999%
+        rebaseCollection.rebase(COMMON,int256(rebaseCollection.totalSupply(COMMON) - 1)); 
+
+        // Here we see even though we increased the total supply by 99% we still only have 1 NFT
+        // This is because we have a low supply (only 1 NFT) which is increased to 1.99 NFTs. This is then
+        // rounded down to 1 NFT by Solidity.
+
+        // If you only have 1 NFT you need to increase the supply at least 100% to have 2 NFTs
+        // The more NFTs you have the less you have to increase the supply to get another NFT
         assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 1);
-        rebaseCollection.rebase(COMMON, int256( 1 )); // Increase supply by ~1% (Total of 100%)
-        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 2);
 
+        rebaseCollection.rebase(COMMON, int256(1)); // Increase supply by ~0.01% (Total of 100%)
+        // When we increase the supply by 100% we get 2 NFTs in total as expected
+        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 2);
+    }
+
+    function testDecreaseFractionBehaviour() public {
+        /**
+         * Test that there is no fractions:
+         * 1 NFT becomes 0 NFTs when rebase decreases supply > 0%
+         */
+
+        rebaseCollection.mint(COMMON, 9999, ""); // Now the supply us 10k
+
+        // Transfer 1 NFT 
+        rebaseCollection.safeTransferFrom(address(this),address(0x11),COMMON,1,"");
+
+        // Decrease supply by ~0.01%
+        rebaseCollection.rebase(COMMON, -1); 
+
+        // This feels like a problem to me
+        // If you only have 1 NFT the smallest decrease in supply from a rebase will result in
+        // the user having 0 NFTs
+        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 0);
     }
 
     function onERC1155Received(
