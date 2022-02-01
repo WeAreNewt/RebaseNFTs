@@ -80,11 +80,6 @@ contract RebaseCollection is ERC1155 {
     mapping(uint256  => uint256) private total_base_units; 
 
     constructor(string memory metadataURI) ERC1155(metadataURI) {
-        // _initTokenId(COMMON);
-        // _initTokenId(UNCOMMON);
-        // _initTokenId(RARE);
-        // _initTokenId(EPIC);
-        // _initTokenId(LEGENDARY);
         mint(COMMON, 1, "");
         mint(RARE, 1, "");
         mint(LEGENDARY, 1, "");
@@ -92,15 +87,10 @@ contract RebaseCollection is ERC1155 {
     }
 
     /**
-     * @notice Sets the total supply, balance of the owner and the scaling factor
-     * @dev Currently supply is fixed so the total supply is minted to the owner
+     * @notice Mints new NFTs
+     * @dev To do this you must update total supply, base units balance 
+     *      of the owner and the scaling factor
      */
-    // function _initTokenId(uint256 id) private {
-    //     _totalSupply[id] = 1; // Set total supply for token
-    //     _baseUnitBalances[id][msg.sender] = total_base_units; // Mint all tokens to the owner
-    //     _scalingFactor[id] = total_base_units / _totalSupply[id]; // Create scaling factor for token
-    // }
-
     function mint(
         uint256 id,
         uint256 amount,
@@ -178,7 +168,7 @@ contract RebaseCollection is ERC1155 {
         // TODO: What happens when balanceOf is zero? How would the user sell the NFT on OpenSea?
         require(
             account != address(0),
-            "ERC1155: balance query for the zero address"
+            "RebaseCollection: balance query for the zero address"
         );
 
         uint256 baseUnitValue = _baseUnitBalances[id][account]; 
@@ -215,16 +205,17 @@ contract RebaseCollection is ERC1155 {
     ) public override {
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
-            "ERC1155: caller is not owner nor approved"
+            "RebaseCollection: caller is not owner nor approved"
         );
-        require(to != address(0), "ERC1155: transfer to the zero address");
+        require(to != address(0), "RebaseCollection: transfer to the zero address");
+        require(_scalingFactor[id] > 0, "RebaseCollection: scaling factor must be greater than zero");
 
         address operator = _msgSender();
         uint256 baseUnitValue = amount * _scalingFactor[id]; // Scale `amount` so we only transfer base unit value
         uint256 fromBalance = _baseUnitBalances[id][from];
         require(
             fromBalance >= baseUnitValue,
-            "ERC1155: insufficient balance for transfer"
+            "RebaseCollection: insufficient balance for transfer"
         );
         unchecked {
             _baseUnitBalances[id][from] = fromBalance - baseUnitValue;

@@ -27,24 +27,23 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
         assertEq(rebaseCollection.totalSupply(GOD), INITIAL_SUPPLY);
 
         // Correct Balance
-        assertEq(
-            rebaseCollection.balanceOf(address(this), COMMON),
-            INITIAL_SUPPLY
-        );
-        assertEq(
-            rebaseCollection.balanceOf(address(this), RARE),
-            INITIAL_SUPPLY
-        );
-        assertEq(
-            rebaseCollection.balanceOf(address(this), LEGENDARY),
-            INITIAL_SUPPLY
-        );
-        assertEq(
-            rebaseCollection.balanceOf(address(this), GOD),
-            INITIAL_SUPPLY
-        );
+        assertEq(rebaseCollection.balanceOf(address(this), COMMON),INITIAL_SUPPLY);
+        assertEq(rebaseCollection.balanceOf(address(this), RARE),INITIAL_SUPPLY);
+        assertEq(rebaseCollection.balanceOf(address(this), LEGENDARY),INITIAL_SUPPLY);
+        assertEq(rebaseCollection.balanceOf(address(this), GOD),INITIAL_SUPPLY);
     }
 
+    function testMinting() public {
+        uint256 amountToMint = 10;
+
+        uint256 balanceBefore = rebaseCollection.balanceOf(address(this), COMMON);
+        uint256 supplyBefore = rebaseCollection.totalSupply(COMMON);
+
+        rebaseCollection.mint(COMMON, amountToMint, ""); 
+
+        assertEq(rebaseCollection.balanceOf(address(this), COMMON), balanceBefore + amountToMint);
+        assertEq(rebaseCollection.totalSupply(COMMON), supplyBefore + amountToMint);
+    }
     function testTransferFrom() public {
         uint256 amountToTransfer = 1;
 
@@ -89,7 +88,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
          * 3 NFT becomes 4 NFTs when rebase increases supply >= ~33%
          */
 
-        rebaseCollection.mint(COMMON, 9999, ""); // Now the supply us 10k
+        rebaseCollection.mint(COMMON, 9999, ""); // Now the supply is 10k
 
         // Transfer 1 NFT 
         rebaseCollection.safeTransferFrom(address(this),address(0x11),COMMON,1,"");
