@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 /**
  * @title RebaseCollection
- * @dev The RebaseCollection is an ERC1155 NFT collection that can also rebase.
+ * @dev The RebaseCollection is an ERC1155 with additional rebase capabilties.
  *      It utilises the ERC1155's ability to be both fungible and non fungible.
  *      Each token in the collection has an elastic supply which means you can
  *      rebase on a single token id.
@@ -24,7 +24,8 @@ contract RebaseCollection is ERC1155 {
     uint256 public constant GOD = 3;
 
     /**
-     * @notice Emitted when tokens of a blacklisted account are burned
+     * @notice Emitted when a rebase events occurs
+     * @dev Rebase events don't necessarily have to change the token supply
      * @param epoch The timestamp of when the rebase occured
      * @param initialTotalSupply The total supply before rebase
      * @param finalTotalSupply The total supply after rebase
@@ -75,10 +76,14 @@ contract RebaseCollection is ERC1155 {
     mapping(uint256 => uint256) private _scalingFactor;
 
     /**
-     * @notice The base amount of tokens held by an account
-     * @dev This amount is divided by a scale factor to get the final balance
+     * @notice The amount of base units held by an account
+     * @dev This amount needs to be divided by a scale factor to get the final balance
      */
     mapping(uint256 => mapping(address => uint256)) private _baseUnitBalances;
+
+    /**
+     * @notice The total number of base units held by an account
+     */
     mapping(uint256 => uint256) private total_base_units;
 
     constructor(string memory metadataURI) ERC1155(metadataURI) {
@@ -116,9 +121,10 @@ contract RebaseCollection is ERC1155 {
 
     /**
      * @notice Adjusts the total supply of a token `id` by a `supplyDelta`
-     * @param id The token id of the NFT you wish to adjust the supply for.
-     * @param supplyDelta The number of new tokens to add into circulation (can be negative).
-     * @return The total supply after the rebase.
+     * @dev Total supply after rebase may differ from actual supply
+     * @param id The token id of the NFT you wish to adjust the supply for
+     * @param supplyDelta The number of new tokens to add into circulation
+     * @return The total supply after the rebase
      */
     function rebase(uint256 id, uint256 supplyDelta)
         external
@@ -235,7 +241,9 @@ contract RebaseCollection is ERC1155 {
     }
 
     /**
-     * @dev See {IERC1155-safeBatchTransferFrom}.
+     * @notice Transfers multiple `amounts` of token `ids`
+     * @dev The callers desired `amounts` must be converted
+     *      to their `baseUnitValue` before transfer.
      */
     function safeBatchTransferFrom(
         address from,
@@ -293,6 +301,9 @@ contract RebaseCollection is ERC1155 {
         return totalSupply(id) > 0;
     }
 
+    /**
+     * @dev OpenZeppelin's safe transfer acceptance check see their ERC1155 for more details
+     */
     function doSafeTransferAcceptanceCheck(
         address operator,
         address from,
@@ -324,6 +335,9 @@ contract RebaseCollection is ERC1155 {
         }
     }
 
+    /**
+     * @dev OpenZeppelin's batch safe transfer acceptance check see their ERC1155 for more details
+     */
     function doSafeBatchTransferAcceptanceCheck(
         address operator,
         address from,
