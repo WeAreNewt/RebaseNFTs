@@ -115,7 +115,7 @@ contract RebaseCollection is ERC1155 {
      * @param supplyDelta The number of new tokens to add into circulation (can be negative).
      * @return The total supply after the rebase.
      */
-    function rebase(uint256 id, int256 supplyDelta) external returns (uint256) {
+    function rebase(uint256 id, uint256 supplyDelta) external returns (uint256) {
         uint256 initialTotalSupply = _totalSupply[id];
 
         if (supplyDelta == 0) {
@@ -123,11 +123,7 @@ contract RebaseCollection is ERC1155 {
             return _totalSupply[id];
         }
 
-        if (supplyDelta < 0) {
-            _totalSupply[id] = _totalSupply[id] - uint256(-supplyDelta);
-        } else {
-            _totalSupply[id] = _totalSupply[id] + uint256(supplyDelta);
-        }
+        _totalSupply[id] += supplyDelta;
 
         if (_totalSupply[id] > MAX_SUPPLY) {
             _totalSupply[id] = MAX_SUPPLY;

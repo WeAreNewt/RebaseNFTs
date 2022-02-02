@@ -70,7 +70,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
 
         rebaseCollection.rebase(
             COMMON,
-            int256(rebaseCollection.totalSupply(COMMON))
+            rebaseCollection.totalSupply(COMMON)
         ); // Double the total supply
         uint256 commonBalance = rebaseCollection.balanceOf(
             address(this),
@@ -94,7 +94,7 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
         rebaseCollection.safeTransferFrom(address(this),address(0x11),COMMON,1,"");
 
         // Increase supply by ~99.999%
-        rebaseCollection.rebase(COMMON,int256(rebaseCollection.totalSupply(COMMON) - 1)); 
+        rebaseCollection.rebase(COMMON,rebaseCollection.totalSupply(COMMON) - 1); 
 
         // Here we see even though we increased the total supply by 99% we still only have 1 NFT
         // This is because we have a low supply (only 1 NFT) which is increased to 1.99 NFTs. This is then
@@ -104,29 +104,9 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
         // The more NFTs you have the less you have to increase the supply to get another NFT
         assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 1);
 
-        rebaseCollection.rebase(COMMON, int256(1)); // Increase supply by ~0.01% (Total of 100%)
+        rebaseCollection.rebase(COMMON, 1); // Increase supply by ~0.01% (Total of 100%)
         // When we increase the supply by 100% we get 2 NFTs in total as expected
         assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 2);
-    }
-
-    function testDecreaseFractionBehaviour() public {
-        /**
-         * Test that there is no fractions:
-         * 1 NFT becomes 0 NFTs when rebase decreases supply > 0%
-         */
-
-        rebaseCollection.mint(COMMON, 9999, ""); // Now the supply us 10k
-
-        // Transfer 1 NFT 
-        rebaseCollection.safeTransferFrom(address(this),address(0x11),COMMON,1,"");
-
-        // Decrease supply by ~0.01%
-        rebaseCollection.rebase(COMMON, -1); 
-
-        // This feels like a problem to me
-        // If you only have 1 NFT the smallest decrease in supply from a rebase will result in
-        // the user having 0 NFTs
-        assertEq(rebaseCollection.balanceOf(address(0x11), COMMON), 0);
     }
 
     function onERC1155Received(
