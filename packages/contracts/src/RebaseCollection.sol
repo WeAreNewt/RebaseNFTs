@@ -38,8 +38,6 @@ contract RebaseCollection is ERC1155 {
         uint256 finalTotalSupply
     );
 
-    // TODO: Add events
-
     uint256 private constant MAX_UINT256 = type(uint256).max;
     uint256 private constant TOTAL_NFTS_TO_MINT = 10000;
 
@@ -109,11 +107,11 @@ contract RebaseCollection is ERC1155 {
         _totalSupply[id] += amount;
         uint256 baseUnitValue = ONE_NFT_WORTH_OF_BASE_UNITS * amount;
         total_base_units[id] += baseUnitValue;
-        _baseUnitBalances[id][msg.sender] += baseUnitValue;
+        _baseUnitBalances[id][operator] += baseUnitValue;
         _scalingFactor[id] = total_base_units[id] / _totalSupply[id];
-        emit TransferSingle(operator, address(0), msg.sender, id, amount);
+        emit TransferSingle(operator, address(0), operator, id, amount);
 
-        doSafeTransferAcceptanceCheck(operator,address(0),to,id,amount,data); 
+        doSafeTransferAcceptanceCheck(operator,address(0),operator,id,amount,data); 
     }
 
     /**

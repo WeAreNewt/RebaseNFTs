@@ -27,23 +27,45 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
         assertEq(rebaseCollection.totalSupply(GOD), INITIAL_SUPPLY);
 
         // Correct Balance
-        assertEq(rebaseCollection.balanceOf(address(this), COMMON),INITIAL_SUPPLY);
-        assertEq(rebaseCollection.balanceOf(address(this), RARE),INITIAL_SUPPLY);
-        assertEq(rebaseCollection.balanceOf(address(this), LEGENDARY),INITIAL_SUPPLY);
-        assertEq(rebaseCollection.balanceOf(address(this), GOD),INITIAL_SUPPLY);
+        assertEq(
+            rebaseCollection.balanceOf(address(this), COMMON),
+            INITIAL_SUPPLY
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(this), RARE),
+            INITIAL_SUPPLY
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(this), LEGENDARY),
+            INITIAL_SUPPLY
+        );
+        assertEq(
+            rebaseCollection.balanceOf(address(this), GOD),
+            INITIAL_SUPPLY
+        );
     }
 
     function testMinting() public {
         uint256 amountToMint = 10;
 
-        uint256 balanceBefore = rebaseCollection.balanceOf(address(this), COMMON);
+        uint256 balanceBefore = rebaseCollection.balanceOf(
+            address(this),
+            COMMON
+        );
         uint256 supplyBefore = rebaseCollection.totalSupply(COMMON);
 
-        rebaseCollection.mint(COMMON, amountToMint, ""); 
+        rebaseCollection.mint(COMMON, amountToMint, "");
 
-        assertEq(rebaseCollection.balanceOf(address(this), COMMON), balanceBefore + amountToMint);
-        assertEq(rebaseCollection.totalSupply(COMMON), supplyBefore + amountToMint);
+        assertEq(
+            rebaseCollection.balanceOf(address(this), COMMON),
+            balanceBefore + amountToMint
+        );
+        assertEq(
+            rebaseCollection.totalSupply(COMMON),
+            supplyBefore + amountToMint
+        );
     }
+
     function testTransferFrom() public {
         uint256 amountToTransfer = 1;
 
@@ -65,13 +87,49 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
         );
     }
 
+    function testBatchTransferFrom() public {
+        uint256 amountToTransfer = 1;
+        address[] memory defaultOperators = new address[](1);
+
+        uint256[] memory ids = new uint256[](4);
+        (ids[0], ids[1], ids[2], ids[3]) = (COMMON, RARE, LEGENDARY, GOD);
+        uint256[] memory amounts = new uint256[](4);
+        (amounts[0], amounts[1], amounts[2], amounts[3]) = (amountToTransfer,amountToTransfer,amountToTransfer,amountToTransfer);
+        address[] memory fromAddresses = new address[](4);
+        (fromAddresses[0], fromAddresses[1], fromAddresses[2], fromAddresses[3]) = (address(this),address(this),address(this),address(this));
+        address[] memory toAddresses = new address[](4);
+        (toAddresses[0], toAddresses[1], toAddresses[2], toAddresses[3]) = (address(0x11),address(0x11),address(0x11),address(0x11));
+        
+
+        rebaseCollection.safeBatchTransferFrom(
+            address(this),
+            address(0x11),
+            ids,
+            amounts,
+            ""
+        );
+
+        uint256 fromBalance = INITIAL_SUPPLY - amountToTransfer;
+        uint256[] memory batchBalancesFrom = rebaseCollection.balanceOfBatch(fromAddresses, ids);
+        uint256[] memory batchBalancesTo = rebaseCollection.balanceOfBatch(toAddresses, ids);
+
+
+        assertEq(batchBalancesFrom[0], fromBalance);
+        assertEq(batchBalancesFrom[1], fromBalance);
+        assertEq(batchBalancesFrom[2], fromBalance);
+        assertEq(batchBalancesFrom[3], fromBalance);
+
+        assertEq(batchBalancesTo[0], amounts[0]);
+        assertEq(batchBalancesTo[1], amounts[1]);
+        assertEq(batchBalancesTo[2], amounts[2]);
+        assertEq(batchBalancesTo[3], amounts[3]);
+
+    }
+
     function testTotalBalanceAfterRebase() public {
         // Test that balance changes as expected after rebase
 
-        rebaseCollection.rebase(
-            COMMON,
-            rebaseCollection.totalSupply(COMMON)
-        ); // Double the total supply
+        rebaseCollection.rebase(COMMON, rebaseCollection.totalSupply(COMMON)); // Double the total supply
         uint256 commonBalance = rebaseCollection.balanceOf(
             address(this),
             COMMON
@@ -90,11 +148,20 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
 
         rebaseCollection.mint(COMMON, 9999, ""); // Now the supply is 10k
 
-        // Transfer 1 NFT 
-        rebaseCollection.safeTransferFrom(address(this),address(0x11),COMMON,1,"");
+        // Transfer 1 NFT
+        rebaseCollection.safeTransferFrom(
+            address(this),
+            address(0x11),
+            COMMON,
+            1,
+            ""
+        );
 
         // Increase supply by ~99.999%
-        rebaseCollection.rebase(COMMON,rebaseCollection.totalSupply(COMMON) - 1); 
+        rebaseCollection.rebase(
+            COMMON,
+            rebaseCollection.totalSupply(COMMON) - 1
+        );
 
         // Here we see even though we increased the total supply by 99% we still only have 1 NFT
         // This is because we have a low supply (only 1 NFT) which is increased to 1.99 NFTs. This is then
