@@ -16,6 +16,8 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
  *      Rebasing techniques are inspired by Ampleforth's Contracts: https://github.com/ampleforth/ampleforth-contracts
  */
 contract RebaseCollection is ERC1155 {
+    using Address for address;
+
     uint256 public constant COMMON = 0;
     uint256 public constant RARE = 1;
     uint256 public constant LEGENDARY = 2;
@@ -37,7 +39,7 @@ contract RebaseCollection is ERC1155 {
     );
 
     // TODO: Add events
-    
+
     uint256 private constant MAX_UINT256 = type(uint256).max;
     uint256 private constant TOTAL_NFTS_TO_MINT = 10000;
 
@@ -47,8 +49,10 @@ contract RebaseCollection is ERC1155 {
      * @dev It is the largest multiple of the inital total supply for better accuracy
      *      and maximum granularity.
      */
-    uint256 private constant MAX_BASE_UNITS = MAX_UINT256 - (MAX_UINT256 % TOTAL_NFTS_TO_MINT);
-    uint256 private constant ONE_NFT_WORTH_OF_BASE_UNITS = MAX_BASE_UNITS / TOTAL_NFTS_TO_MINT;
+    uint256 private constant MAX_BASE_UNITS =
+        MAX_UINT256 - (MAX_UINT256 % TOTAL_NFTS_TO_MINT);
+    uint256 private constant ONE_NFT_WORTH_OF_BASE_UNITS =
+        MAX_BASE_UNITS / TOTAL_NFTS_TO_MINT;
 
     /**
      * @notice The largest value the total supply can reach
@@ -77,7 +81,7 @@ contract RebaseCollection is ERC1155 {
      * @dev This amount is divided by a scale factor to get the final balance
      */
     mapping(uint256 => mapping(address => uint256)) private _baseUnitBalances;
-    mapping(uint256  => uint256) private total_base_units; 
+    mapping(uint256 => uint256) private total_base_units;
 
     constructor(string memory metadataURI) ERC1155(metadataURI) {
         mint(COMMON, 1, "");
@@ -88,7 +92,7 @@ contract RebaseCollection is ERC1155 {
 
     /**
      * @notice Mints new NFTs
-     * @dev To do this you must update total supply, base units balance 
+     * @dev To do this you must update total supply, base units balance
      *      of the owner and the scaling factor
      */
     function mint(
@@ -96,17 +100,20 @@ contract RebaseCollection is ERC1155 {
         uint256 amount,
         bytes memory data
     ) public {
-        require(totalSupply(id) + amount <= TOTAL_NFTS_TO_MINT, "RebaseCollection: Total supply exceeded");
+        require(
+            totalSupply(id) + amount <= TOTAL_NFTS_TO_MINT,
+            "RebaseCollection: Total supply exceeded"
+        );
         address operator = _msgSender();
 
         _totalSupply[id] += amount;
-        uint256 baseUnitValue = ONE_NFT_WORTH_OF_BASE_UNITS *  amount;
-        total_base_units[id] += baseUnitValue; 
+        uint256 baseUnitValue = ONE_NFT_WORTH_OF_BASE_UNITS * amount;
+        total_base_units[id] += baseUnitValue;
         _baseUnitBalances[id][msg.sender] += baseUnitValue;
         _scalingFactor[id] = total_base_units[id] / _totalSupply[id];
         emit TransferSingle(operator, address(0), msg.sender, id, amount);
 
-        // _doSafeTransferAcceptanceCheck(operator,address(0),to,id,amount,data);  // TODO: Add this back
+        doSafeTransferAcceptanceCheck(operator,address(0),to,id,amount,data); 
     }
 
     /**
@@ -115,7 +122,10 @@ contract RebaseCollection is ERC1155 {
      * @param supplyDelta The number of new tokens to add into circulation (can be negative).
      * @return The total supply after the rebase.
      */
-    function rebase(uint256 id, uint256 supplyDelta) external returns (uint256) {
+    function rebase(uint256 id, uint256 supplyDelta)
+        external
+        returns (uint256)
+    {
         uint256 initialTotalSupply = _totalSupply[id];
 
         if (supplyDelta == 0) {
@@ -160,20 +170,17 @@ contract RebaseCollection is ERC1155 {
         override
         returns (uint256)
     {
-        // TODO: We would probably get better results by rounding up/down?
-        // TODO: What happens when balanceOf is zero? How would the user sell the NFT on OpenSea?
         require(
             account != address(0),
             "RebaseCollection: balance query for the zero address"
         );
 
-        uint256 baseUnitValue = _baseUnitBalances[id][account]; 
+        uint256 baseUnitValue = _baseUnitBalances[id][account];
         if (baseUnitValue > 0) {
-            return  baseUnitValue / _scalingFactor[id]; 
+            return baseUnitValue / _scalingFactor[id];
         } else {
             return 0;
         }
-        
     }
 
     /**
@@ -203,8 +210,14 @@ contract RebaseCollection is ERC1155 {
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
             "RebaseCollection: caller is not owner nor approved"
         );
-        require(to != address(0), "RebaseCollection: transfer to the zero address");
-        require(_scalingFactor[id] > 0, "RebaseCollection: scaling factor must be greater than zero");
+        require(
+            to != address(0),
+            "RebaseCollection: transfer to the zero address"
+        );
+        require(
+            _scalingFactor[id] > 0,
+            "RebaseCollection: scaling factor must be greater than zero"
+        );
 
         address operator = _msgSender();
         uint256 baseUnitValue = amount * _scalingFactor[id]; // Scale `amount` so we only transfer base unit value
@@ -220,15 +233,127 @@ contract RebaseCollection is ERC1155 {
 
         emit TransferSingle(operator, from, to, id, amount);
 
-        // _doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data); // TODO: Add this back
+        doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data); 
     }
 
-    // TODO: safeBatchTransferFrom
+    /**
+     * @dev See {IERC1155-safeBatchTransferFrom}.
+     */
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public override {
+        require(
+            from == _msgSender() || isApprovedForAll(from, _msgSender()),
+            "ERC1155: transfer caller is not owner nor approved"
+        );
+        require(
+            ids.length == amounts.length,
+            "RebaseCollection: ids and amounts length mismatch"
+        );
+        require(
+            to != address(0),
+            "RebaseCollection: transfer to the zero address"
+        );
+
+        address operator = _msgSender();
+
+        for (uint256 i = 0; i < ids.length; ++i) {
+            uint256 id = ids[i];
+            uint256 amount = amounts[i];
+
+            require(
+                _scalingFactor[id] > 0,
+                "RebaseCollection: scaling factor must be greater than zero"
+            );
+
+            uint256 baseUnitValue = amount * _scalingFactor[id]; // Scale `amount` so we only transfer base unit value
+            uint256 fromBalance = _baseUnitBalances[id][from];
+            require(
+                fromBalance >= baseUnitValue,
+                "RebaseCollection: insufficient balance for transfer"
+            );
+
+            unchecked {
+                _baseUnitBalances[id][from] = fromBalance - baseUnitValue;
+            }
+            _baseUnitBalances[id][to] += baseUnitValue;
+        }
+
+        emit TransferBatch(operator, from, to, ids, amounts);
+
+        doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, amounts, data);
+    }
 
     /**
      * @dev Indicates whether any token exist with a given id, or not.
      */
     function exists(uint256 id) public view returns (bool) {
         return totalSupply(id) > 0;
+    }
+
+    function doSafeTransferAcceptanceCheck(
+        address operator,
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) private {
+        if (to.isContract()) {
+            try
+                IERC1155Receiver(to).onERC1155Received(
+                    operator,
+                    from,
+                    id,
+                    amount,
+                    data
+                )
+            returns (bytes4 response) {
+                if (response != IERC1155Receiver.onERC1155Received.selector) {
+                    revert("RebaseCollection: ERC1155Receiver rejected tokens");
+                }
+            } catch Error(string memory reason) {
+                revert(reason);
+            } catch {
+                revert(
+                    "RebaseCollection: transfer to non ERC1155Receiver implementer"
+                );
+            }
+        }
+    }
+
+    function doSafeBatchTransferAcceptanceCheck(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) private {
+        if (to.isContract()) {
+            try
+                IERC1155Receiver(to).onERC1155BatchReceived(
+                    operator,
+                    from,
+                    ids,
+                    amounts,
+                    data
+                )
+            returns (bytes4 response) {
+                if (
+                    response != IERC1155Receiver.onERC1155BatchReceived.selector
+                ) {
+                    revert("RebaseCollection: ERC1155Receiver rejected tokens");
+                }
+            } catch Error(string memory reason) {
+                revert(reason);
+            } catch {
+                revert("RebaseCollection: transfer to non ERC1155Receiver implementer");
+            }
+        }
     }
 }
