@@ -20,14 +20,15 @@ export const Button = ({
   text,
   variant = Variants.primary,
   height = 'h-12',
+  disabled,
   ...props
 }: Props) => (
   <>
     <button
       {...props}
-      disabled={loading}
+      disabled={disabled || loading}
       className={cn(
-        'rounded-md px-2 py-4 w-36 flex justify-center items-center cursor-pointer disabled:opacity-50',
+        'rounded-md px-2 py-4 w-36 flex justify-center items-center cursor-pointer disabled:opacity-50 transition-all ease-in-out duration-300',
         {
           'bg-dark-pink-100 text-white hover:bg-light-pink-700':
             variant === Variants.primary,
@@ -38,7 +39,7 @@ export const Button = ({
         className
       )}
     >
-      {text}
+      <span className={cn({ hidden: loading })}>{text}</span>
       {loading && <Icon name="Spinner" className="animate-spin ml-2" />}
     </button>
   </>
