@@ -3,6 +3,9 @@ import { useState } from 'react'
 import { AppPage, Heading, MoneyInput, Layout } from '^@components'
 import { Permissions } from '^@services/permissions'
 import { StakeItem, TabItem } from 'components/pages/stake'
+import { ethers } from "ethers";
+import tokenartifact from '../../erc1155abi.json'
+
 
 /**
  * Tab state
@@ -12,12 +15,30 @@ enum Tab {
   unstake,
 }
 
+
 const Stake = () => {
   const [tab, setTab] = useState<Tab>(Tab.stake)
   const [value, setValue] = useState<number | null>(null)
 
+  const approve = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const contractAddress = '' // contact address
+
+    const signer = provider.getSigner(0)
+
+    const token = new ethers.Contract(
+      contractAddress,
+      tokenartifact,
+      signer
+    );
+    
+    const addr = await signer.getAddress()
+      
+    const approval = await token.setApprovalForAll(contractAddress, true)
+  }
+
   return (
-    <Layout showConnectWallet>
+    <Layout showConnectWallet >
       <div className="flex flex-col w-full bg-gray-100 p-8 rounded">
         <Heading text="Stake" />
         <h3 className="text-xs leading-4 font-medium tracking-wider uppercase">
@@ -43,7 +64,7 @@ const Stake = () => {
             className="flex-1 mr-4"
             onInputChange={(number) => setValue(number)}
           />
-          <Button text="Approve" height="h-full" disabled={!value} />
+          <Button text="Approve" height="h-full" disabled={!value} onClick={approve} />
         </div>
 
         <span className="text-sm leading-5 font-normal text-gray-600 mt-2">

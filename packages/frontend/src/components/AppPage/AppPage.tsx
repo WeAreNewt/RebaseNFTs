@@ -1,7 +1,14 @@
 import { Permissions } from '^@services/permissions'
+import { Web3ReactProvider } from '@web3-react/core'
+import { MetaMaskProvider } from '../../hooks/useMetaMask'
+import { ethers } from "ethers";
 
 interface Props {
   permission: Permissions
+}
+
+function getLibrary(provider: any): ethers.providers.Web3Provider {
+  return new ethers.providers.Web3Provider(provider);
 }
 
 export const AppPage = (PageComponent: React.FC, { permission }: Props) => {
@@ -20,8 +27,17 @@ export const AppPage = (PageComponent: React.FC, { permission }: Props) => {
 
     /**
      * Render page
-     */
-    return <PageComponent {...props} />
+     */       
+    return  (
+      
+      <Web3ReactProvider getLibrary={getLibrary}>
+      <MetaMaskProvider>
+        <PageComponent {...props} />
+      </MetaMaskProvider>
+      </Web3ReactProvider>
+        
+      
+            )
   }
 
   return Component
