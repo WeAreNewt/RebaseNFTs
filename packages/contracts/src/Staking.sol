@@ -2,26 +2,28 @@
 pragma solidity ^0.8.4;
 
 import "./IRebaseCollection.sol";
+import "./IBaseCollection.sol";
+import "./Randomness.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
-contract Staking {
-    IERC1155 NFT;
+contract Staking is Randomness {
+    IBaseCollection NFT;
     IRebaseCollection sNFT;
 
+    // Track original NFTs
     mapping(address => mapping(uint256 => uint256)) stakers;
 
-    constructor(IERC1155 _NFT, IRebaseCollection _sNFT) {
+    constructor(IBaseCollection _NFT, IRebaseCollection _sNFT) {
         NFT = _NFT;
         sNFT = _sNFT;
     }
 
     function stake(uint256 _amount, uint256 _id) external {
-        // Track original NFTs
         stakers[msg.sender][_id] += _amount;
 
         NFT.safeTransferFrom(msg.sender, address(this), _id, _amount, "");
-        sNFT.safeTransferFrom(address(this), msg.sender, _id, _amount, "");
-        // TODO: Integrate rebase of sNFT into staking. Also look at reward machanism for triggering rebase
+
+        sNFT.mint(_id, _amount, "");
     }
 
     function unstake(uint256 _amount, uint256 _id) external {
@@ -44,12 +46,29 @@ contract Staking {
 
             if (nftsStaked > 0) {
                 stakers[msg.sender][_id] -= _amount;
-                NFT.safeTransferFrom(address(this), msg.sender, _id, nftsStaked, "");
+                NFT.safeTransferFrom(
+                    address(this),
+                    msg.sender,
+                    _id,
+                    nftsStaked,
+                    ""
+                );
             }
-            sNFT.safeTransferFrom(msg.sender, address(this), _id, _amount, "");
 
-            // TODO: Transfer rewards with the left overs
+            sNFT.burnFrom(msg.sender, _id, _amount);
+
+            for (uint256 i = 0; i < leftOver; i++) {
+                // Generate random number between 0 and 99
+                uint256 randomValue = generateRandom(100);
+
+                // There is a 1% chance that the random value is 37
+                // TODO: What is the incentive for the top tokenId holders?
+                if (randomValue == 37 && NFT.exists(_id + 1)) {
+                    NFT.mint(msg.sender, _id + 1, 1, "");
+                } else {
+                    NFT.mint(msg.sender, _id, 1, "");
+                }
+            }
         }
-
     }
 }

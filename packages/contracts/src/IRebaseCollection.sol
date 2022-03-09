@@ -20,4 +20,5 @@ interface IRebaseCollection is IERC1155 {
 
     function exists(uint256 id) external view returns (bool);
 
+    function burnFrom( address account, uint256 id, uint256 amount ) external;
 }
