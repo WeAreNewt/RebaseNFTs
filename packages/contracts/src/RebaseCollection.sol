@@ -116,7 +116,39 @@ contract RebaseCollection is ERC1155 {
         _scalingFactor[id] = total_base_units[id] / _totalSupply[id];
         emit TransferSingle(operator, address(0), operator, id, amount);
 
-        doSafeTransferAcceptanceCheck(operator,address(0),operator,id,amount,data); 
+        doSafeTransferAcceptanceCheck(
+            operator,
+            address(0),
+            operator,
+            id,
+            amount,
+            data
+        );
+    }
+
+    function burnFrom(
+        address account,
+        uint256 id,
+        uint256 amount
+    ) public virtual {
+        require(
+            account == _msgSender() || isApprovedForAll(account, _msgSender()),
+            "RebaseCollection: caller is not owner nor approved"
+        );
+        require(
+            totalSupply(id) >= amount,
+            "RebaseCollection: Amount is greater than total supply"
+        );
+        
+        address operator = _msgSender();
+        uint256 baseUnitValue = ONE_NFT_WORTH_OF_BASE_UNITS * amount;
+        require(_baseUnitBalances[id][operator] >= baseUnitValue, "RebaseCollection: burn amount exceeds balance");
+
+        _totalSupply[id] -= amount;
+        total_base_units[id] -= baseUnitValue;
+        _baseUnitBalances[id][operator] -= baseUnitValue;
+        _scalingFactor[id] = total_base_units[id] / _totalSupply[id];
+        emit TransferSingle(operator, address(0), operator, id, amount);
     }
 
     /**
@@ -237,7 +269,7 @@ contract RebaseCollection is ERC1155 {
 
         emit TransferSingle(operator, from, to, id, amount);
 
-        doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data); 
+        doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data);
     }
 
     /**
@@ -291,7 +323,14 @@ contract RebaseCollection is ERC1155 {
 
         emit TransferBatch(operator, from, to, ids, amounts);
 
-        doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, amounts, data);
+        doSafeBatchTransferAcceptanceCheck(
+            operator,
+            from,
+            to,
+            ids,
+            amounts,
+            data
+        );
     }
 
     /**
@@ -364,7 +403,9 @@ contract RebaseCollection is ERC1155 {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("RebaseCollection: transfer to non ERC1155Receiver implementer");
+                revert(
+                    "RebaseCollection: transfer to non ERC1155Receiver implementer"
+                );
             }
         }
     }
