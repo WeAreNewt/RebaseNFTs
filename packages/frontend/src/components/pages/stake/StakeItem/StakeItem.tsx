@@ -6,14 +6,14 @@ interface StakeItemProps {
   /**
    * sub text
    */
-  subText: string
+  balance: number
 }
 
-export const StakeItem = ({ text, subText }: StakeItemProps) => (
+export const StakeItem = ({ text, balance }: StakeItemProps) => (
   <div className="flex justify-between mb-2">
     <span className="text-lg leading-6 font-semibold">{text}</span>
     <span className="text-lg leading-6 font-normal text-gray-600">
-      {subText}
+      {balance}
     </span>
   </div>
 )

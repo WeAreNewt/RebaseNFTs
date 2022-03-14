@@ -1,16 +1,5 @@
 [
 	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "metadataURI",
-				"type": "string"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -33,31 +22,6 @@
 			}
 		],
 		"name": "ApprovalForAll",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "epoch",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "initialTotalSupply",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "finalTotalSupply",
-				"type": "uint256"
-			}
-		],
-		"name": "Rebased",
 		"type": "event"
 	},
 	{
@@ -154,58 +118,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "COMMON",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "GOD",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "LEGENDARY",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "RARE",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -248,49 +160,6 @@
 				"internalType": "uint256[]",
 				"name": "",
 				"type": "uint256[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"name": "baseBalanceOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			}
-		],
-		"name": "baseTotalSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -342,6 +211,11 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
@@ -365,24 +239,28 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "supplyDelta",
-				"type": "uint256"
-			}
-		],
-		"name": "rebase",
-		"outputs": [
+				"internalType": "uint256[]",
+				"name": "ids",
+				"type": "uint256[]"
+			},
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"internalType": "uint256[]",
+				"name": "amounts",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
 			}
 		],
+		"name": "mintBatch",
+		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -473,6 +351,19 @@
 	{
 		"inputs": [
 			{
+				"internalType": "string",
+				"name": "newuri",
+				"type": "string"
+			}
+		],
+		"name": "setURI",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "bytes4",
 				"name": "interfaceId",
 				"type": "bytes4"
@@ -503,25 +394,6 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "uri",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",

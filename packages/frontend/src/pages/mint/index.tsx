@@ -1,29 +1,28 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { ethers } from "ethers";
-import tokenartifact from '../../erc1155abi.json'
+import tokenartifact from '../../baseabi.json'
 import { AppPage, Layout, MoneyInput, Heading, Button } from '^@components'
 import { Permissions } from '^@services/permissions'
 
 
 const Mint = () => {
 
-  const [value, setValue] = useState<number | null>(null)
+  const [value, setValue] = useState<number>()
 
   const mint = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contractAddress = '' //contract address here
+    const contractAddress = '0x9dBCF50e357172D490ee5E428d75129A6224a2e9' //contract address here
 
     const signer = provider.getSigner(0)
-
+    const addr : string = await signer.getAddress()
     const token = new ethers.Contract(
       contractAddress,
       tokenartifact,
       signer
     );
     
-    
-    const mintnft = await token.mint(1,"2000",'0x00')
+    const mintnft = await token.mint(addr,1,value,'0x00')
   }
 
   return (
