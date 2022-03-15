@@ -4,15 +4,16 @@ import { ethers } from "ethers";
 import tokenartifact from '../../baseabi.json'
 import { AppPage, Layout, MoneyInput, Heading, Button } from '^@components'
 import { Permissions } from '^@services/permissions'
-
+import  useMetaMask  from '../../hooks/useMetaMask'
 
 const Mint = () => {
 
   const [value, setValue] = useState<number>()
+  const { isActive } = useMetaMask();
 
   const mint = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contractAddress = '0x9dBCF50e357172D490ee5E428d75129A6224a2e9' //contract address here
+    const contractAddress = '' //basecollection contract address here
 
     const signer = provider.getSigner(0)
     const addr : string = await signer.getAddress()
@@ -48,7 +49,7 @@ const Mint = () => {
             onInputChange={(number) => setValue(number)}
             className="flex-1 mr-4"
           />
-          <Button text="Mint" height="h-full" onClick={mint} />
+          <Button text="Mint" height="h-full" disabled={isActive ? false : true} onClick={mint} />
         </div>
 
         <span className="text-sm leading-5 font-normal text-gray-600 mt-2">
