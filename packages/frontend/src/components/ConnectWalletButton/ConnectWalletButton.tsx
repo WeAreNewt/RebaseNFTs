@@ -3,7 +3,7 @@ import { Button } from '^@components'
 import { injectedConnector } from "^@services/connector"
 
 export const ConnectWalletButton = () => {
-  const { active, activate, deactivate, error } = useWeb3React()
+  const { active, activate, deactivate } = useWeb3React()
 
   async function connect() {
       try {
@@ -26,7 +26,7 @@ export const ConnectWalletButton = () => {
     {active ? (
       <Button onClick={disconnect} variant="secondary" text="Disconnect" />
     ) : (
-      <Button onClick={connect} variant="primary" text={"Connect"}/>
+      <Button onClick={connect} variant="primary" text="Connect" />
     )}
     </>
   )
