@@ -5,20 +5,26 @@ import "./IRebaseCollection.sol";
 import "./IBaseCollection.sol";
 import "./Randomness.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
-contract Staking is Randomness {
+contract Staking is Randomness, IERC1155Receiver {
     IBaseCollection NFT;
     IRebaseCollection sNFT;
 
     // Track original NFTs
     mapping(address => mapping(uint256 => uint256)) stakers;
 
-    constructor(IBaseCollection _NFT, IRebaseCollection _sNFT) {
-        NFT = _NFT;
-        sNFT = _sNFT;
+    constructor(address _NFT, address _sNFT) {
+        NFT = IBaseCollection(_NFT);
+        sNFT = IRebaseCollection(_sNFT);
     }
 
     function stake(uint256 _amount, uint256 _id) external {
+        require(_amount > 0, "Staking: Can't stake an amount of zero");
+        require(
+            NFT.balanceOf(msg.sender, _id) >= _amount,
+            "Staking: You dont have enough NFTs to stake"
+        );
         stakers[msg.sender][_id] += _amount;
 
         NFT.safeTransferFrom(msg.sender, address(this), _id, _amount, "");
@@ -27,8 +33,7 @@ contract Staking is Randomness {
     }
 
     function unstake(uint256 _amount, uint256 _id) external {
-        // require(_amount <= stakers[msg.sender][_id], );
-        require(_amount > 0);
+        require(_amount > 0, "Staking: Can't unstake an amount of zero");
         require(
             sNFT.balanceOf(msg.sender, _id) >= _amount,
             "Staking: Not enough sNFTs"
@@ -70,5 +75,42 @@ contract Staking is Randomness {
                 }
             }
         }
+    }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        external
+        view
+        returns (bool)
+    {
+        return true; // Change lol
     }
 }

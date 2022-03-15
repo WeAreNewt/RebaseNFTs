@@ -65,6 +65,39 @@ contract RebaseCollectionTest is DSTest, IERC1155Receiver {
             supplyBefore + amountToMint
         );
     }
+    
+    function testBurning() public {
+        uint256 amountToMint = 10;
+
+        uint256 balanceBefore = rebaseCollection.balanceOf(
+            address(this),
+            COMMON
+        );
+        uint256 supplyBefore = rebaseCollection.totalSupply(COMMON);
+
+        rebaseCollection.mint(COMMON, amountToMint, "");
+
+        assertEq(
+            rebaseCollection.balanceOf(address(this), COMMON),
+            balanceBefore + amountToMint
+        );
+        assertEq(
+            rebaseCollection.totalSupply(COMMON),
+            supplyBefore + amountToMint
+        );
+
+        rebaseCollection.burnFrom(address(this),COMMON, amountToMint);
+
+        assertEq(
+            rebaseCollection.balanceOf(address(this), COMMON),
+            balanceBefore
+        );
+        assertEq(
+            rebaseCollection.totalSupply(COMMON),
+            supplyBefore
+        );
+
+    }
 
     function testTransferFrom() public {
         uint256 amountToTransfer = 1;

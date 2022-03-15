@@ -12,7 +12,7 @@ contract BaseCollection is ERC1155, AccessControl, Pausable, ERC1155Burnable, ER
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
-    constructor() ERC1155("") {
+    constructor(string memory metadataURI) ERC1155(metadataURI) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(URI_SETTER_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
