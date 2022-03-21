@@ -7,8 +7,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^1.0.5",
+    "@web3-react/core": "^6.1.9",
+    "@web3-react/injected-connector": "^6.0.7",
     "classnames": "^2.3.1",
     "date-fns": "^2.11.1",
+    "ethers": "^5.6.0",
     "gray-matter": "^4.0.2",
     "next": "latest",
     "prettier": "^2.5.1",
