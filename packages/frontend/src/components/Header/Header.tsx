@@ -7,8 +7,8 @@ export const Header = () => (
     </div>
     <nav className="mr-10">
       <ol className="flex text-white items-center h-full p-4">
-        <li className="px-2 ml-2">Github</li>
-        <li className="px-2 ml-2">Snowtrace</li>
+        <li className="px-2 ml-2"><a href="https://github.com/WeAreNewt/RebaseNFTs/" target="_blank">Github</a></li>
+        <li className="px-2 ml-2"><a href="https://snowtrace.io/" target="_blank">Snowtrace</a></li>
         <li className="px-2 ml-2">Twitter</li>
         <li className="px-2 ml-2">Discord</li>
       </ol>

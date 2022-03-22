@@ -66,7 +66,7 @@ export const Sidebar = () => (
       <Item href={routes.stats}>
         <ChartBarIcon className="w-6 h-6 mr-2" /> Stats
       </Item>
-      <Item href={routes.docs}>
+      <Item href="https://github.com/WeAreNewt/RebaseNFTs/" newTab>
         <FolderIcon className="w-6 h-6 mr-2" /> Docs
       </Item>
     </ol>
