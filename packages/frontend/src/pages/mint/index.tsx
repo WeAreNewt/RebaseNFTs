@@ -2,13 +2,14 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { ethers } from "ethers";
 import tokenartifact from '../../baseabi.json'
-import { AppPage, Layout, MoneyInput, Heading, Button } from '^@components'
+import { AppPage, Layout, MoneyInput, Heading, Button, Slider, ConnectWalletButton } from '^@components'
 import { Permissions } from '^@services/permissions'
 import  useMetaMask  from '../../hooks/useMetaMask'
 
+
 const Mint = () => {
 
-  const [value, setValue] = useState<number>()
+  const [value, setValue] = useState<number>(1)
   const { isActive } = useMetaMask();
 
   const mint = async () => {
@@ -29,32 +30,46 @@ const Mint = () => {
   return (
   <Layout showConnectWallet>
     <div className="flex flex-col justify-center items-center">
-      <div className="flex justify-center">
-        <Image src="/images/ricco-1.png" width={300} height={300} />
-        <Image src="/images/ricco-2.png" width={300} height={300} />
-      </div>
-      <h1 className="text-6xl leading-none font-extrabold mb-4">
-        Mint!
+      
+      <h1 className="text-6xl leading-none font-extrabold mb-4 ">
+        Mint! It's Free!
       </h1>
+      
       <h2 className="text-4xl leading-10 font-normal mb-4">9990/9999 minted</h2>
+      
     </div>
+    <div> 
+      
+      {isActive ? 
 
-      <div className="flex flex-col w-full bg-gray-100 p-8 rounded">
-        <Heading text="Mint" />
+      (
+        <div>
+          <div className="flex flex-row w-full p-8 rounded space-x-4 place-items-center justify-center">
         
-        <div className="flex">
-          <MoneyInput
-            max={1000}
-            value={value}
-            onInputChange={(number) => setValue(number)}
-            className="flex-1 mr-4"
-          />
-          <Button text="Mint" height="h-full" disabled={isActive ? false : true} onClick={mint} />
+        <div className="flex flex-col w-96 accent-black">
+          <Slider value={value} onInputChange={(value) => setValue(value)}/>
         </div>
+        
 
-        <span className="text-sm leading-5 font-normal text-gray-600 mt-2">
-          Note: Mint your NFT here
-        </span>
+        <div className="flex flex-row static right-0 float-right">
+          <h1>{value} Rabbits</h1>
+        </div>
+      
+      </div>
+      <div className = "flex flex-col justify-center items-center">
+          <Button text="Mint" height="h-full" disabled={isActive ? false : true} onClick={mint} />
+      </div>
+           
+        </div>
+      ) : 
+      (
+        <div className = "flex flex-col justify-center items-center">
+          <ConnectWalletButton />
+        </div>
+      )}
+
+
+      
 
       </div>
   </Layout>
