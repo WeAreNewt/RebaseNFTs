@@ -5,8 +5,8 @@ import { Permissions } from '^@services/permissions'
 import { StakeItem, TabItem } from 'components/pages/stake'
 import  useMetaMask  from '../../hooks/useMetaMask'
 import { ethers } from "ethers";
-import tokenartifact from '../../baseabi.json'
-import stakingartifact from '../../staking.json'
+import tokenartifact from 'abis/baseabi.json'
+import stakingartifact from 'abis/staking.json'
 
 /**
  * Tab state

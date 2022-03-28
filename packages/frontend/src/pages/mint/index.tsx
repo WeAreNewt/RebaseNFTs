@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { ethers } from "ethers";
-import tokenartifact from '../../baseabi.json'
+import tokenartifact from 'abis/baseabi.json'
 import { AppPage, Layout, MoneyInput, Heading, Button, Slider, ConnectWalletButton } from '^@components'
 import { Permissions } from '^@services/permissions'
 import  useMetaMask  from '../../hooks/useMetaMask'
