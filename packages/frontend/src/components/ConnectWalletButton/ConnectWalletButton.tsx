@@ -7,4 +7,3 @@ export const ConnectWalletButton: React.FC  = () => {
     return (
         <Button onClick={connect} disabled={isActive ? true : false} text={isActive ? "Connected" : "Connect wallet"} />
     )
-}
