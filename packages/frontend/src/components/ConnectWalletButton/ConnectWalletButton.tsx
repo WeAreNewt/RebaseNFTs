@@ -1,33 +1,10 @@
-import { useWeb3React } from "@web3-react/core"
 import { Button } from '^@components'
-import { injectedConnector } from "^@services/connector"
+import  useMetaMask  from '../../hooks/useMetaMask'
 
-export const ConnectWalletButton = () => {
-  const { active, activate, deactivate } = useWeb3React()
+export const ConnectWalletButton: React.FC  = () => { 
+    const { connect , isActive } = useMetaMask();
 
-  async function connect() {
-      try {
-          await activate(injectedConnector)
-      } catch (e) {
-          console.error(e)
-      }
-  }
-
-  async function disconnect() {
-      try {
-          deactivate()
-      } catch (e) {
-          console.log(e)
-      }
-  }
-
-  return (
-    <>
-    {active ? (
-      <Button onClick={disconnect} variant="secondary" text="Disconnect" />
-    ) : (
-      <Button onClick={connect} variant="primary" text="Connect" />
-    )}
-    </>
-  )
-}
+    return (
+        <Button onClick={connect} disabled={isActive ? true : false} text={isActive ? "Connected" : "Connect wallet"} />
+    )
+    }
