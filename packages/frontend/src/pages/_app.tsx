@@ -1,7 +1,14 @@
 import { AppProps } from 'next/app'
 import Head from 'next/head'
+import { Web3ReactProvider } from '@web3-react/core'
+import { Web3Provider } from '@ethersproject/providers'
 
 import '^@styles/global.css'
+
+
+function getLibrary(provider) {
+  return new Web3Provider(provider)
+}
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -41,7 +48,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Rebasing Rabbits</title>
       </Head>
 
-      <Component {...pageProps} />
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Component {...pageProps} />
+      </Web3ReactProvider>
     </>
   )
 }
