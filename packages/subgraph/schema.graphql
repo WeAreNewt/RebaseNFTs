@@ -1,0 +1,18 @@
+type Stake @entity{
+    id: ID!
+    amount: BigInt
+    timestamp: BigInt
+}
+
+type Unstake @entity{
+    id: ID!
+    amount: BigDecimal!
+    timestamp: BigInt!
+}
+
+type Transaction @entity {
+  id: ID!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  blockHash: Bytes!
+}

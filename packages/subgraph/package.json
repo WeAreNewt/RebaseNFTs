@@ -1,0 +1,22 @@
+{
+    "name": "@wearenewt/rebasenfts-subgraph",
+    "version": "0.1.0",
+    "description": "This package contains NFT indexing for the RebaseNFTs project",
+    "scripts": {
+      "create-local": "graph create rebasenfts --node http://127.0.0.1:8020",
+      "codegen": "graph codegen ",
+      "build": "graph build",
+      "deploy-local": "graph deploy rebasenfts --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020" 
+    },
+    "dependencies": {
+      "babel-polyfill": "^6.26.0",
+      "babel-register": "^6.26.0",
+      "truffle": "^5.0.4",
+      "truffle-contract": "^4.0.5",
+      "truffle-hdwallet-provider": "^1.0.4"
+    },
+    "devDependencies": {
+      "@graphprotocol/graph-cli": "^0.26.0",
+      "@graphprotocol/graph-ts": "^0.24.1"
+    }
+  }

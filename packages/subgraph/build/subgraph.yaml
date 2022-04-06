@@ -1,0 +1,25 @@
+specVersion: 0.0.2
+description: RebaseNFTs subgraph
+repository: null
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RebaseNFTs
+    network: mainnet
+    source:
+      abi: RebaseNFTs
+      address: "0x7163dcDbcb074ed87Cf55Ee5EEFEE11C3ef99811"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Stake
+      abis:
+        - name: RebaseNFTs
+          file: RebaseNFTs/build/RebaseNFTs/abis/RebaseNFTs.json
+      eventHandlers:
+        - event: Stake(uint256,uint256)
+          handler: handleStake
+      file: RebaseNFTs/RebaseNFTs.wasm
