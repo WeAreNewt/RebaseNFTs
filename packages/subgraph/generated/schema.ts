@@ -15,6 +15,10 @@ export class Stake extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
+
+    this.set("nftid", Value.fromBigInt(BigInt.zero()));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("hash", Value.fromString(""));
   }
 
   save(): void {
@@ -43,38 +47,31 @@ export class Stake extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get amount(): BigInt | null {
+  get nftid(): BigInt {
+    let value = this.get("nftid");
+    return value!.toBigInt();
+  }
+
+  set nftid(value: BigInt) {
+    this.set("nftid", Value.fromBigInt(value));
+  }
+
+  get amount(): BigInt {
     let value = this.get("amount");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+    return value!.toBigInt();
   }
 
-  set amount(value: BigInt | null) {
-    if (!value) {
-      this.unset("amount");
-    } else {
-      this.set("amount", Value.fromBigInt(<BigInt>value));
-    }
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 
-  get timestamp(): BigInt | null {
-    let value = this.get("timestamp");
-    if (!value || value.kind == ValueKind.NULL) {
-      return null;
-    } else {
-      return value.toBigInt();
-    }
+  get hash(): string {
+    let value = this.get("hash");
+    return value!.toString();
   }
 
-  set timestamp(value: BigInt | null) {
-    if (!value) {
-      this.unset("timestamp");
-    } else {
-      this.set("timestamp", Value.fromBigInt(<BigInt>value));
-    }
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
   }
 }
 
@@ -83,8 +80,9 @@ export class Unstake extends Entity {
     super();
     this.set("id", Value.fromString(id));
 
-    this.set("amount", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("nftid", Value.fromBigInt(BigInt.zero()));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("hash", Value.fromString(""));
   }
 
   save(): void {
@@ -113,21 +111,30 @@ export class Unstake extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get amount(): BigDecimal {
-    let value = this.get("amount");
-    return value!.toBigDecimal();
-  }
-
-  set amount(value: BigDecimal) {
-    this.set("amount", Value.fromBigDecimal(value));
-  }
-
-  get timestamp(): BigInt {
-    let value = this.get("timestamp");
+  get nftid(): BigInt {
+    let value = this.get("nftid");
     return value!.toBigInt();
   }
 
-  set timestamp(value: BigInt) {
-    this.set("timestamp", Value.fromBigInt(value));
+  set nftid(value: BigInt) {
+    this.set("nftid", Value.fromBigInt(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get hash(): string {
+    let value = this.get("hash");
+    return value!.toString();
+  }
+
+  set hash(value: string) {
+    this.set("hash", Value.fromString(value));
   }
 }

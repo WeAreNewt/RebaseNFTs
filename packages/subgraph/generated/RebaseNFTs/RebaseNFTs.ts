@@ -10,16 +10,16 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class Stake extends ethereum.Event {
-  get params(): Stake__Params {
-    return new Stake__Params(this);
+export class NewStake extends ethereum.Event {
+  get params(): NewStake__Params {
+    return new NewStake__Params(this);
   }
 }
 
-export class Stake__Params {
-  _event: Stake;
+export class NewStake__Params {
+  _event: NewStake;
 
-  constructor(event: Stake) {
+  constructor(event: NewStake) {
     this._event = event;
   }
 
@@ -32,16 +32,16 @@ export class Stake__Params {
   }
 }
 
-export class Unstake extends ethereum.Event {
-  get params(): Unstake__Params {
-    return new Unstake__Params(this);
+export class NewUnstake extends ethereum.Event {
+  get params(): NewUnstake__Params {
+    return new NewUnstake__Params(this);
   }
 }
 
-export class Unstake__Params {
-  _event: Unstake;
+export class NewUnstake__Params {
+  _event: NewUnstake;
 
-  constructor(event: Unstake) {
+  constructor(event: NewUnstake) {
     this._event = event;
   }
 
@@ -164,6 +164,40 @@ export class GenerateRandomCall__Outputs {
   }
 }
 
+export class ConstructorCall extends ethereum.Call {
+  get inputs(): ConstructorCall__Inputs {
+    return new ConstructorCall__Inputs(this);
+  }
+
+  get outputs(): ConstructorCall__Outputs {
+    return new ConstructorCall__Outputs(this);
+  }
+}
+
+export class ConstructorCall__Inputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+
+  get _NFT(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _sNFT(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class ConstructorCall__Outputs {
+  _call: ConstructorCall;
+
+  constructor(call: ConstructorCall) {
+    this._call = call;
+  }
+}
+
 export class OnERC1155ReceivedCall extends ethereum.Call {
   get inputs(): OnERC1155ReceivedCall__Inputs {
     return new OnERC1155ReceivedCall__Inputs(this);
@@ -244,40 +278,6 @@ export class StakeCall__Outputs {
   _call: StakeCall;
 
   constructor(call: StakeCall) {
-    this._call = call;
-  }
-}
-
-export class ConstructorCall extends ethereum.Call {
-  get inputs(): ConstructorCall__Inputs {
-    return new ConstructorCall__Inputs(this);
-  }
-
-  get outputs(): ConstructorCall__Outputs {
-    return new ConstructorCall__Outputs(this);
-  }
-}
-
-export class ConstructorCall__Inputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-
-  get _NFT(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _sNFT(): Address {
-    return this._call.inputValues[1].value.toAddress();
-  }
-}
-
-export class ConstructorCall__Outputs {
-  _call: ConstructorCall;
-
-  constructor(call: ConstructorCall) {
     this._call = call;
   }
 }
